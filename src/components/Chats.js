@@ -1,88 +1,91 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { ChatEngine } from 'react-chat-engine'
-import { useHistory } from 'react-router';
-import { useAuth } from './context/AuthContext';
+import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
+import { ChatEngine } from 'react-chat-engine';
 import { auth } from './firebase.config';
 
-const Chats = () => {
+import { useAuth } from '../components/context/AuthContext'
+import axios from 'axios';
 
-    const [loading, setLoading] = useState(true)
-    const history = useHistory()
-    const { user } = useAuth()
-    console.log(user.photoURL);
+export const Chats = () => {
+    const history = useHistory();
+    const { user } = useAuth();
+    const [loading, setLoading] = useState(true);
 
-    const handleLogOut = async () => {
-        await auth.signOut()
-        history.push('/')
+    console.log(user);
+
+    const handleLogout = async () => {
+
+        await auth.signOut();
+
+        history.push('/');
     }
 
     const getFile = async (url) => {
-        const response = await fetch(url)
-        const data = await response.blob()
+        const response = await fetch(url);
+        const data = await response.blob(); //binary file, any file
 
-        return new File([data], "userPhoto.jpeg", { type: "images/jpeg" })
+        return new File([data], "userPhoto.jpg", { type: 'image/jpeg' })
     }
 
     useEffect(() => {
-        if (!user || user === null) {
-            history.push('/')
-
-            return
+        if (!user) {
+            history.push('/');
+            return;
         }
+
         axios.get('https://api.chatengine.io/users/me/', {
-            headers: {
-                "project-id": "4034a86c-59e7-459d-b857-e9ba2910d863",                 
+            header: {
+                "project-id": "4034a86c-59e7-459d-b857-e9ba2910d863",
                 "user-name": user.email,
-                "user-secret": user.uid,
+                "user-secret": user.uid
             }
+        }).then(() => {
+            setLoading(false);
         })
-
-            .then(() => {
-                setLoading(false)
-            })
             .catch(() => {
-                let formdata = new FormData()
-                formdata.append('email', user.email)
-                formdata.append('userName', user.email)
-                formdata.append('secret', user.uid)
+                let formdata = new FormData();
+                formdata.append('email', user.email);
+                formdata.append('username', user.email);
+                formdata.append('secret', user.uid);
 
-                getFile(user.photoURL)
+                getFile(user.photoURL) // api to get an image
                     .then((avatar) => {
-                        formdata.append('avatar', avatar, avatar.name)
+                        formdata.append('avatar', avatar, avatar.name);
 
-                        axios.post('https://api.chatengine.io/users/',
+                        axios.post('https://api.chatengine.io/users',
                             formdata,
                             { headers: { "private-key": "e3ba2354-954f-4afa-a1b8-1d2d6c26608f" } }
                         )
                             .then(() => setLoading(false))
-                            .catch(e => console.log('e', e.response))
-                    })
-
+                            .catch((error) => console.log(error))
+                    }) //fetch the users
             })
 
-    }, [user, history])
+    }, [user, history]);
+
 
     if (!user || loading) return 'Loading...'
-
     return (
-        <div className="chats-page">
+        <div className="chat-page">
             <div className="nav-bar">
                 <div className="logo-tab">
-                    ChitChat
+                    Chitchat
                 </div>
-                <div onClick={handleLogOut} className="logout-tab">
+                <div onClick={handleLogout} className="logout-tab">
                     Logout
                 </div>
             </div>
+
             <ChatEngine
-                height="calc(100vh -66px)"
+
+                heigh="calc(100vh - 66px)"
                 projectID="4034a86c-59e7-459d-b857-e9ba2910d863"
                 userName={user.email}
                 userSecret={user.uid}
             />
         </div>
-    );
-};
+
+    )
+}
 
 export default Chats;

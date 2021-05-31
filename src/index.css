@@ -32,6 +32,8 @@
 }
 
 .logout-tab {
+  font-weight: 600;
+  font-size: 20px;
   position: absolute;
   top: 22px;
   right: 22px;
@@ -47,7 +49,7 @@
 /* Login Page */
 
 #login-page {
-  background-image: linear-gradient(#40a9ff, #0766cc);
+  background-image: linear-gradient(#4fadfa, #c05931);
   position: absolute;
   top: 0px;
   bottom: 0px;
@@ -77,11 +79,13 @@
 
 .facebook {
   background-color: #3b5998;
+  width: 240px;
 }
 
 .google {
   background-color: #b83530;
   color: white;
+  width: 240px;
 }
 
 #loading-container {

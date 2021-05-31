@@ -11,7 +11,7 @@ import { AuthProvider } from "./context/AuthContext"
 
 function App() {
   return (
-    <div style={{ fontFamily: 'Avenir' }}>
+    <div style={{ fontFamily: 'Roboto' }}>
       <Router>
         <AuthProvider>
           <Switch>
